@@ -1,0 +1,18 @@
+{
+    "config": [
+        {
+            "id": "red", 
+            "innerHTML": "Red",
+            "class": "",
+            "type": "func", 
+            "value": "myAlert()"
+        }, 
+        {
+            "id": "blue", 
+            "innerHTML": "Blue",
+            "class": "",
+            "type": "func", 
+            "value": ""
+        }
+    ]
+}
