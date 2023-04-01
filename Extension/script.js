@@ -2,14 +2,14 @@ var xhr = new XMLHttpRequest(); // Create a new XHR object
 var configFile = "./config.json"; // Path to the config file
 xhr.open("GET", configFile, true); // opens the request 
 xhr.responseType = "json"; // Set the response type to JSON
-var 
+
 
 // When the request loads, parse the JSON response into an object
 xhr.onload = function() {
   if (xhr.status === 200) {
     var config = xhr.response["config"];
     config.forEach(option => {
-        var newElement = document.createElement("button"); // Create a new button element
+        var newElement = document.createElement("option"); // Create a new button element
         newElement.id = option["id"]; // Set the id of the button to the id in the config file
         newElement.classList.add("dropdown-button"); // Add the class "dropdown-button" to the button
         newElement.innerHTML = option["innerHTML"]; // Set the inner HTML of the button to the innerHTML in the config file
