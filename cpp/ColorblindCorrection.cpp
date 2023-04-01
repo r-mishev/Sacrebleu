@@ -1,4 +1,5 @@
 #include "ColorblindCorrection.h"
+#include <cmath>
 
 //Color Correction Algorithms
 void ColorblindCorrection::LMS(float& r, float& g, float& b, std::string type)

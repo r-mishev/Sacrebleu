@@ -2,6 +2,7 @@ var xhr = new XMLHttpRequest(); // Create a new XHR object
 var configFile = "./config.json"; // Path to the config file
 xhr.open("GET", configFile, true); // opens the request 
 xhr.responseType = "json"; // Set the response type to JSON
+var 
 
 // When the request loads, parse the JSON response into an object
 xhr.onload = function() {
