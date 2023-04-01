@@ -1,103 +1,10 @@
-#include "ColorblindCorrection.h"
-#include <cmath>
+#include<cmath>
+#include<algorithm>
 
-//Color Correction Algorithms
-void ColorblindCorrection::LMS(float& r, float& g, float& b, std::string type)
-
-{
-    // computing LMS matrix
-    float L = (17.8824 * r) + (43.5161 * g) + (4.11935 * b);
-    float M = (3.45565 * r) + (27.1554 * g) + (3.86714 * b);
-    float S = (0.0299566 * r) + (0.184309 * g) + (1.46709 * b);
-
-    float rgb[3][3];
-
-    setType(rgb, type);
-
-    // simulating color blindness
-    float l = (rgb[0][0] * L) + (rgb[0][1] * M) + (rgb[0][2] * S);
-    float m = (rgb[1][0] * L) + (rgb[1][1] * M) + (rgb[1][2] * S);
-    float s = (rgb[2][0] * L) + (rgb[2][1] * M) + (rgb[2][2] * S);
-
-    // LMS to RGB matrix conversion
-    float R = (0.0809444479 * l) + (-0.130504409 * m) + (0.116721066 * s);
-    float G = (-0.0102485335 * l) + (0.0540193266 * m) + (-0.113614708 * s);
-    float B = (-0.000365296938 * l) + (-0.00412161469 * m) + (0.693511405 * s);
-    // Isolate invisible colors to color vision deficiency (calculate error matrix)
-    R = r - R;
-    G = g - G;
-    B = b - B;
-    // Shift colors towards visible spectrum (apply error modification)
-    float RR = (0.0 * R) + (0.0 * G) + (0.0 * B);
-    float GG = (0.7 * R) + (1.0 * G) + (0.0 * B);
-    float BB = (0.7 * R) + (0.0 * G) + (1.0 * B);
-    // Add compensation to original values
-    R = RR + r;
-    G = GG + g;
-    B = BB + b;
-    // Clamp values
-    if (R < 0)
-        R = 0;
-    if (R > 255)
-        R = 255;
-    if (G < 0)
-        G = 0;
-    if (G > 255)
-        G = 255;
-    if (B < 0)
-        B = 0;
-    if (B > 255)
-        B = 255;
-
-    r = static_cast<int>(R);
-    g = static_cast<int>(G);
-    b = static_cast<int>(B);
-};
-void ColorblindCorrection::CBFS(float& r, float& g, float& b, std::string color)
-{
-    float h, s, l;
-    RGBtoHSL(r, g, b, h, s, l);;
-
-    float rgb[3];
-    setColor(rgb, color);
-
-    float distance = sqrt((r - rgb[0]) * (r - rgb[0]) + (g - rgb[1]) * (g - rgb[1]) + (b - rgb[2]) * (b - rgb[2]));
-    //set percentage to set threshold
-    float percentage = 0.3;
-    float threshold = percentage * 441.67;
-
-    if (distance < threshold)
-    {
-        h -= h * 0.3;
-        s -= s * 0.1;
-        l += l * 0.25;
-    }
-    else
-    {
-        s += s * 0.1;
-        l -= l * 0.1;
-    }
-    HSLtoRBG(h, s, l, r, b, g);
-};
-void ColorblindCorrection::shiftingColors(float& r, float& g, float& b, int posX, int posY)
-{
-    float h, s, v;
-    RGBtoHSV(r, g, b, h, s, v);
-
-    h += ((posX + posY) % 50) / 100.0;
-    s += ((posX + posY) % 50) / 100.0;
-    v += ((posX + posY) % 50) / 100.0;
-
-    if (h > 1)
-        h -= 1;
-    else if (h < 1)
-        h += 1;
-
-    HSVtoRBG(h, s, v, r, g, b);
-};
+float severity;
 
 //Auxilary methods to extend the use of the LMS and CBFS algorithms 
-void ColorblindCorrection::setType(float rgb[3][3], std::string s)
+void setType(float rgb[3][3], short int flag)
 {
     // Daltonization values
     float protanope[3][3] = { {0.0, 2.02344, -2.52581},
@@ -110,13 +17,13 @@ void ColorblindCorrection::setType(float rgb[3][3], std::string s)
                              {0.494207, 0.0, 1.24827},
                              {0.0, 0.0, 1.0} };
 
-    if (s == "protanope")
+    if (flag == 1)
     {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
                 rgb[i][j] = protanope[i][j];
     }
-    else if (s == "deuteranope")
+    else if (flag == 2)
     {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
@@ -129,28 +36,32 @@ void ColorblindCorrection::setType(float rgb[3][3], std::string s)
                 rgb[i][j] = tritanope[i][j];
     }
 };
-void ColorblindCorrection::setColor(float rgb[3], std::string s)
+void setColor(float rgb[3], short int flag)
 {
-    if (s == "red") {
+    if (flag == 1) {
         rgb[0] = 255;
         rgb[1] = 0;
         rgb[2] = 0;
     }
-    else if (s == "green") {
+    else if (flag == 2) {
         rgb[0] = 0;
         rgb[1] = 255;
         rgb[2] = 0;
     }
-    else if (s == "blue") {
+    else {
         rgb[0] = 0;
         rgb[1] = 0;
         rgb[2] = 255;
     }
 
 };
+void setSeverity(float s)
+{
+    severity = s;
+};
 
 //RGB encoders
-void ColorblindCorrection::RGBtoHSV(float r, float g, float b, float& h, float& s, float& v)
+void RGBtoHSV(float r, float g, float b, float& h, float& s, float& v)
 {
     r /= 255.0;
     g /= 255.0;
@@ -187,7 +98,7 @@ void ColorblindCorrection::RGBtoHSV(float r, float g, float b, float& h, float& 
     v = cmax;
 
 };
-void ColorblindCorrection::HSVtoRBG(float h, float s, float v, float& r, float& g, float& b)
+void HSVtoRBG(float h, float s, float v, float& r, float& g, float& b)
 {
     float c = v * s;
     float x = c * (1 - fabs(fmod(h / 60.0, 2) - 1));
@@ -242,7 +153,7 @@ void ColorblindCorrection::HSVtoRBG(float h, float s, float v, float& r, float& 
     if (b > 255)
         b = 255;
 };
-void ColorblindCorrection::RGBtoHSL(float r, float g, float b, float& h, float& s, float& l)
+void RGBtoHSL(float r, float g, float b, float& h, float& s, float& l)
 {
     r /= 255.0;
     g /= 255.0;
@@ -279,7 +190,7 @@ void ColorblindCorrection::RGBtoHSL(float r, float g, float b, float& h, float& 
     //Calculating lightness
     l = (cmax + cmin) / 2.000;
 };
-void ColorblindCorrection::HSLtoRBG(float h, float s, float l, float& r, float& g, float& b)
+void HSLtoRBG(float h, float s, float l, float& r, float& g, float& b)
 {
     if (s == 0) {
         r = g = b = static_cast<int>(l * 255.0);
@@ -342,3 +253,98 @@ void ColorblindCorrection::HSLtoRBG(float h, float s, float l, float& r, float& 
 
 
 };
+
+//Color Correction Algorithms
+void LMS(float& r, float& g, float& b, short int flag = 1)
+
+{
+    // computing LMS matrix
+    float L = (17.8824 * r) + (43.5161 * g) + (4.11935 * b);
+    float M = (3.45565 * r) + (27.1554 * g) + (3.86714 * b);
+    float S = (0.0299566 * r) + (0.184309 * g) + (1.46709 * b);
+
+    float rgb[3][3];
+
+    setType(rgb, flag);
+
+    // simulating color blindness
+    float l = (rgb[0][0] * L) + (rgb[0][1] * M) + (rgb[0][2] * S);
+    float m = (rgb[1][0] * L) + (rgb[1][1] * M) + (rgb[1][2] * S);
+    float s = (rgb[2][0] * L) + (rgb[2][1] * M) + (rgb[2][2] * S);
+
+    // LMS to RGB matrix conversion
+    float R = (0.0809444479 * l) + (-0.130504409 * m) + (0.116721066 * s);
+    float G = (-0.0102485335 * l) + (0.0540193266 * m) + (-0.113614708 * s);
+    float B = (-0.000365296938 * l) + (-0.00412161469 * m) + (0.693511405 * s);
+    // Isolate invisible colors to color vision deficiency (calculate error matrix)
+    R = r - R;
+    G = g - G;
+    B = b - B;
+    // Shift colors towards visible spectrum (apply error modification)
+    float RR = (0.0 * R) + (0.0 * G) + (0.0 * B);
+    float GG = (0.7 * R) + (1.0 * G) + (0.0 * B);
+    float BB = (0.7 * R) + (0.0 * G) + (1.0 * B);
+    // Add compensation to original values
+    R = RR + r;
+    G = GG + g;
+    B = BB + b;
+    // Clamp values
+    if (R < 0)
+        R = 0;
+    if (R > 255)
+        R = 255;
+    if (G < 0)
+        G = 0;
+    if (G > 255)
+        G = 255;
+    if (B < 0)
+        B = 0;
+    if (B > 255)
+        B = 255;
+
+    r = static_cast<int>(R);
+    g = static_cast<int>(G);
+    b = static_cast<int>(B);
+};
+void CBFS(float& r, float& g, float& b, short int flag = 1)
+{
+    float h, s, l;
+    RGBtoHSL(r, g, b, h, s, l);;
+
+    float rgb[3];
+    setColor(rgb, flag);
+
+    float distance = sqrt((r - rgb[0]) * (r - rgb[0]) + (g - rgb[1]) * (g - rgb[1]) + (b - rgb[2]) * (b - rgb[2]));
+    //set percentage to set threshold
+    float threshold = 0.3 * 441.67;
+
+    if (distance < threshold)
+    {
+        h -= h * 0.3;
+        s -= s * 0.1;
+        l += l * 0.25;
+    }
+    else
+    {
+        s += s * 0.1;
+        l -= l * 0.1;
+    }
+    HSLtoRBG(h, s, l, r, b, g);
+};
+void shiftingColors(float& r, float& g, float& b, int posX, int posY)
+{
+    float h, s, v;
+    RGBtoHSV(r, g, b, h, s, v);
+
+    h += ((posX + posY) % 50) / 100.0;
+    s += ((posX + posY) % 50) / 100.0;
+    v += ((posX + posY) % 50) / 100.0;
+
+    if (h > 1)
+        h -= 1;
+    else if (h < 1)
+        h += 1;
+
+    HSVtoRBG(h, s, v, r, g, b);
+};
+
