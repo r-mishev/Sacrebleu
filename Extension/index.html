@@ -1,32 +1,81 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title></title>
-    <meta charset="utf-8">
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arvo">
-</head>
-<body>
-    <div class="menu">
-            <img src="logo.png" alt="logo" class="logo">
-            <h1>EyeAssist</h1>
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label> 
-    </div>
-    <div class="options">
-        <label for="touch"><span>Select</span></label>               
-        <input type="checkbox" id="touch"> 
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arvo">
+    </head>
+    <body>
+        <div class="menu">
+                <img src="logo.png" alt="logo" class="logo">
+                <h1>EyeAssist</h1>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label> 
+        </div>
+        <div class="options">
+            <label for="touch"><span>Select</span></label>               
+            <input type="checkbox" id="touch"> 
 
-        <ul class="slide">
-        <li><button class="full-width">Protanope (LMS)</button></li> 
-        <li><button class="full-width">Deuteranope (LMS)</button></li>
-        <li><button class="full-width">Protanope (CBFS)</button></li> 
-        <li><button class="full-width">Deuteranope (CBFS)</button></li>
-        <li><button class="full-width">Tritanope</button></li>
-        </ul>
-    </div>
-</body>
+            <ul class="slide">
+            <li><button class="full-width"  id="0">Protanope (LMS)</button></li> 
+            <li><button class="full-width" id="1">Deuteranope (LMS)</button></li>
+            <li><button class="full-width" id="2">Protanope (CBFS)</button></li> 
+            <li><button class="full-width" id="3">Deuteranope (CBFS)</button></li>
+            <li><button class="full-width" id="4">Tritanope</button></li>
+            </ul>
+        </div>
+        <canvas id="myCanvas"></canvas>
+        <script src="ColorblindCorrection.js"> </script>
+        <script>
+            const protanopeLMS = document.getElementById('0');
+            const canvas = document.getElementById("myCanvas");
+            const ctx = canvas.getContext('2d', {
+                willReadFrequently: true
+            });
+            const randomBetween = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+            canvas.width = window.innerWidth / 2;
+            canvas.height = window.innerHeight / 2;
+            
+            let rR, gR, bR;
+            for (let i = 0; i < canvas.width; i++) {
+                if (i % 50 === 0) {
+                    rR = randomBetween(0, 255);
+                    gR = randomBetween(0, 255);
+                    bR = randomBetween(0, 255);
+                }
+
+                for (let j = 0; j < canvas.height; j++) {
+                    ctx.fillStyle = `rgb(
+                        ${rR},
+                        ${gR},
+                        ${bR}
+                    )`;
+                    ctx.fillRect(i, j, 1, 1);
+                }
+            }
+
+            protanopeLMS.addEventListener('click', () => {
+            let pixelData;
+            let r = 0, g = 0, b = 0;
+
+            for (let i = 0; i < canvas.height; i++) {
+                for (let j = 0; j < canvas.height; j++) {
+                    pixelData = ctx.getImageData(i, j, 1, 1).data;
+                    console.log(pixelData[0], pixelData[1], pixelData[2], i, j);
+                    [r, g, b] = LMS(pixelData[0], pixelData[1], pixelData[2]);
+                    console.log([r,g,b]);
+                    ctx.fillStyle = `rgb(
+                        ${r},
+                        ${g},
+                        ${b}
+                    )`;
+                    ctx.fillRect(i, j, 1, 1);
+                }
+            }
+        });
+        </script>
+    </body>
 </html>

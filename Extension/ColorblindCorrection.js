@@ -293,6 +293,7 @@ function CBFS(r, g, b, flag = 1) {
     [r, g, b] = HSLtoRGB(h, s, l);
 
     console.log(r, g, b);
+    return [r, g, b];
 }
 function shiftingColors(r, g, b, posX, posY) {
     let h, s, v;
