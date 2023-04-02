@@ -80,7 +80,11 @@ ul {
     background: rgba(0, 0, 0, 0.25);
 }
 
-#touch {position: absolute; opacity: 0; height: 0px;}    
+#touch {
+  position: absolute; 
+  opacity: 0; 
+  height: 0px;
+}    
 
 #touch:checked + .slide {height: 420px;} 
 

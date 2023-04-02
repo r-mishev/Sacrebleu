@@ -1,3 +1,8 @@
+/*
+    This file will contain the logic behind saving the states and preferences of the user. This will be done by saving them in the localStorage (HashMap) and then retrieving them on the start up of the pop up. 
+    TODO(): FINISH
+*/
+
 const items = [{"enabled" : 0, "type" : ""}];
 const itemsStr = JSON.stringify(items);
 
