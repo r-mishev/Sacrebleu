@@ -5,18 +5,28 @@
     <meta charset="utf-8">
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arvo">
 </head>
 <body>
-    <div class="navbar">
-        <div class="menu">
-            <img src="logo.png" alt="logo">
-            <h1>EyeAsist</h1>
+    <div class="menu">
+            <img src="logo.png" alt="logo" class="logo">
+            <h1>EyeAssist</h1>
             <label class="switch">
                 <input type="checkbox">
                 <span class="slider"></span>
             </label> 
-        </div>
     </div>
+    <div class="options">
+        <label for="touch"><span>Select</span></label>               
+        <input type="checkbox" id="touch"> 
 
+        <ul class="slide">
+        <li><button class="full-width">Protanope (LMS)</button></li> 
+        <li><button class="full-width">Deuteranope (LMS)</button></li>
+        <li><button class="full-width">Protanope (CBFS)</button></li> 
+        <li><button class="full-width">Deuteranope (CBFS)</button></li>
+        <li><button class="full-width">Tritanope</button></li>
+        </ul>
+    </div>
 </body>
 </html>

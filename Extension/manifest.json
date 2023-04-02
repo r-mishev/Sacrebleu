@@ -1,11 +1,12 @@
 {
-    "name": "Sacrebleu",
+    "name": "EyeAssist",
     "version": "1.0.0",
     "description": "Hackathon extension project",
     "manifest_version": 3,
     "author": "Team Sacrebleu",
     "action":{
+        "default_icon": "logo.png",
         "default_popup": "index.html",
-        "default_title": "Sacrebleu"
+        "default_title": "EyeAssist"
     }
 }
