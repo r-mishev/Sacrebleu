@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+   <head>
+      <meta charset="utf-8"> 
+      <title>Demo</title> 
+   </head>
+   <script src="ColorblindCorrection.js"></script> 
+   <body>
+    <button id="lmsButton" style="width: 200px;height: 250px;">AA</button>
+    <canvas id="myCanvas"></canvas>
+      <script>
+        const lmsButton = document.getElementById('lmsButton');
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const randomBetween = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+
+        let rR, gR, bR;
+        for (let i = 0; i < window.innerWidth; i++) {
+            if (i % 50 === 0){    
+                rR = randomBetween(0, 255);
+                gR = randomBetween(0, 255);
+                bR = randomBetween(0, 255);
+            }
+            for (let j = 0; j < window.innerHeight; j++) {
+                
+                ctx.fillStyle = `rgb(
+                    ${rR},
+                    ${gR},
+                    ${bR}
+                )`;
+                ctx.fillRect(i, j, 1, 1);
+            }
+        }
+
+lmsButton.addEventListener('click', () => {
+  // Assuming `r`, `g`, and `b` are already defined.
+    let pixelData;
+    let r = 0, g = 0, b = 0;
+
+    for (let i = 0; i < window.innerHeight; i++) {
+        for (let j = 0; j < window.innerWidth; j++) {
+            pixelData = ctx.getImageData(i, j, 1, 1).data;
+            console.log(pixelData[0], pixelData[1], pixelData[2], i, j);
+            [r, g, b] = CBFS(pixelData[0], pixelData[1], pixelData[2], 3);
+            console.log([r,g,b]);
+            ctx.fillStyle = `rgb(
+                ${r},
+                ${g},
+                ${b}
+            )`;
+            ctx.fillRect(i, j, 1, 1);
+        }
+    }
+}); 
+
+      </script>
+   </body>
+</html>
