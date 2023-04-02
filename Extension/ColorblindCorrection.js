@@ -48,6 +48,7 @@ function setColor(flag) {
     return rgb;
 };
 
+//Setter and getter for severity
 function setSeverity(s) {
     severity = s;
 }
@@ -84,6 +85,8 @@ function RGBtoHSV(r, g, b) {
     } else {
         s = delta / cmax;
     }
+
+    //Calculating value
     v = cmax;
 
     return [h, s, v];
@@ -209,7 +212,7 @@ function HSLtoRGB(h, s, l) {
     g = Math.round((gp + m) * 255.0);
     b = Math.round((bp + m) * 255.0);
 
-    //clamp values
+    //Clamp values
     r = Math.min(Math.max(r, 0), 255);
     g = Math.min(Math.max(g, 0), 255);
     b = Math.min(Math.max(b, 0), 255);
@@ -279,8 +282,9 @@ function CBFS(r, g, b, flag = 1) {
 
     let rgb = setColor(flag);
 
+    //Calculating distance from the missing color
     const distance = Math.sqrt((r - rgb[0]) * (r - rgb[0]) + (g - rgb[1]) * (g - rgb[1]) + (b - rgb[2]) * (b - rgb[2]));
-    const threshold = 0.3 * 441.67;
+    const threshold = 0.3 * 441.67; //This threshold is the current standard, but it can be adjusted for more precise adjustments
 
     if (distance < threshold) {
         h -= h * 0.3;
@@ -295,6 +299,7 @@ function CBFS(r, g, b, flag = 1) {
     console.log(r, g, b);
     return [r, g, b];
 }
+
 function shiftingColors(r, g, b, posX, posY) {
     let h, s, v;
     [h, s, v] = RGBtoHSV(r, g, b);
