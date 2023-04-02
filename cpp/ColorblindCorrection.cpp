@@ -348,3 +348,9 @@ void shiftingColors(float& r, float& g, float& b, int posX, int posY)
     HSVtoRBG(h, s, v, r, g, b);
 };
 
+void adjustSeverity (float severity, float &r1, float &g1,  float &b1, float &r2, float &g2,  float &b2)
+{
+    r2 = severity * r1 + (1 - severity) * r2;
+    g2 = severity * g1 + (1 - severity) * g2;
+    b2 = severity * b1 + (1 - severity) * b2;
+}
